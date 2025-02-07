@@ -6,21 +6,21 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 )
 
 // DoMultiFormHttp support multi-form body
 func DoMultiFormHttp(headers map[string]string, Method, Url string, data map[string]string) (*http.Response, error) {
 	var bufReader bytes.Buffer
-	writer := multipart.NewWriter(&bufReader)
-
+	formData := url.Values{}
 	for k, v := range data {
-		_ = writer.WriteField(k, v)
+		formData.Set(k, v)
 	}
 
-	if err := writer.Close(); err != nil {
+	_, err := bufReader.WriteString(formData.Encode())
+	if err != nil {
 		return nil, fmt.Errorf("writer.Close:%s", err.Error())
 	}
-
 	req, err := http.NewRequest(Method, Url, &bufReader)
 	if err != nil {
 		return nil, fmt.Errorf("%s %s NewRequest err: %s", Method, Url, err)
