@@ -115,7 +115,9 @@ func DoJsonHttp(headers map[string]string, Method, Url string, body []byte) (*ht
 	if err != nil {
 		return nil, err
 	}
-
+	for k, v := range headers {
+		req.Header.Add(k, v)
+	}
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
